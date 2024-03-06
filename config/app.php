@@ -185,4 +185,11 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'hashing' => [
+        'driver' => 'bcrypt',
+        'options' => [
+            'cost' => 12, // Adjust cost factor as needed
+        ],
+    ],
+
 ];
