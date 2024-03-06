@@ -3,39 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
+
 
 class ProductController extends Controller
 {
+
+    public function __construct(ProductRepository $productRepository)
+    {
+        $this->productRepository = $productRepository;
+    }
+
     public function index()
     {
-        $products = Product::all();
+        $products = $this->productRepository->all();
         return response()->json($products);
     }
 
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = $this->productRepository->find($id);
         return response()->json($product);
     }
 
     public function store(Request $request)
     {
-        $product = Product::create($request->all());
+        $product = $this->productRepository->create($request->all());
         return response()->json($product, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $product = Product::findOrFail($id);
-        $product->update($request->all());
+        $product = $this->productRepository->update($id, $request->all());
         return response()->json($product, 200);
     }
 
     public function destroy($id)
     {
-        $product = Product::findOrFail($id);
-        $product->delete();
+        $product = $this->productRepository->delete($id);
         return response()->json(null, 200);
     }
 }
