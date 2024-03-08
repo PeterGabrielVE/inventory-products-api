@@ -7,13 +7,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Response;
 
+/**
+* @OA\Info(title="API Inventario", version="1.0")
+*
+* @OA\Server(url="http://swagger.local")
+*/
+
 class CategoryController extends Controller
 {
+    
     public function __construct(CategoryRepository $categoryRepository)
     {
         $this->categoryRepository = $categoryRepository;
     }
 
+    /**
+        * @OA\Get(
+        *     path="/api/categories",
+        *     summary="Obtener todos las categorías",
+        *     @OA\Response(response="200", description="Lista de categorias"),
+        *     @OA\Response(response="500", description="Categorias no encontrados"),
+        * )
+
+    */
     public function index()
     {
         try {
@@ -24,6 +40,37 @@ class CategoryController extends Controller
         }
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/categories/{id}",
+     *     tags={"Categories"},
+     *     summary="Obtener una categoría por ID",
+     *     description="Obtiene una categoría específica por su ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la categoría",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Categoría obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example="1"),
+     *             @OA\Property(property="name", type="string", example="Category Name"),
+     *             @OA\Property(property="description", type="string", example="Descripcion Nueva categoría")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Categoría no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Category not found")
+     *         )
+     *     )
+     * )
+     */
     public function show($id)
     {
         try {
@@ -37,6 +84,22 @@ class CategoryController extends Controller
         }
     }
 
+ /**
+ * @OA\Post(
+ *     path="/api/categories",
+ *     summary="Crear una nueva categoría",
+ *     tags={"Categories"},
+ *     @OA\RequestBody(
+ *         @OA\JsonContent(
+ *             required={"name"},
+ *             @OA\Property(property="name", type="string", example="Category Name"),
+ *             @OA\Property(property="description", type="string", example="Descripcion Nueva categoría")
+ *         )
+ *     ),
+ *     @OA\Response(response="201", description="Categoría creada exitosamente"),
+ *     @OA\Response(response="422", description="Error de validación")
+ * )
+ */
     public function store(Request $request)
     {
         $validator = $this->validateCategoryRequest($request);
@@ -53,6 +116,31 @@ class CategoryController extends Controller
         }
     }
 
+    /**
+     * @OA\Put(
+     *     path="/api/categories/{id}",
+     *     summary="Actualizar una categoría existente",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría a actualizar",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="Nueva categoría"),
+     *             @OA\Property(property="description", type="string", example="Descripcion Nueva categoría")
+     *         )
+     *     ),
+     *     @OA\Response(response="200", description="Categoría actualizada exitosamente"),
+     *     @OA\Response(response="400", description="Error al actualizar la categoría"),
+     *     @OA\Response(response="422", description="Error de validación")
+     * )
+    */
     public function update(Request $request, $id)
     {
         $validator = $this->validateCategoryRequest($request);
@@ -69,6 +157,22 @@ class CategoryController extends Controller
         }
     }
 
+    /**
+     * @OA\Delete(
+     *     path="/api/categories/{id}",
+     *     summary="Eliminar una categoría existente",
+     *     tags={"Categories"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la categoría a eliminar",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="204", description="Categoría eliminada exitosamente"),
+     *     @OA\Response(response="400", description="Error al eliminar la categoría")
+     * )
+     */
     public function destroy($id)
     {
         try {

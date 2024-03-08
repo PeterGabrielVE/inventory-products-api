@@ -16,6 +16,15 @@ class ProductController extends Controller
         $this->productRepository = $productRepository;
     }
 
+    /**
+        * @OA\Get(
+        *     path="/api/products",
+        *     summary="Obtener todos los productos",
+        *     @OA\Response(response="200", description="Lista de productos"),
+        *     @OA\Response(response="500", description="Productos no encontrados"),
+        * )
+
+    */
     public function index()
     {
         try {
@@ -26,6 +35,40 @@ class ProductController extends Controller
         }
     }
 
+     /**
+     * @OA\Get(
+     *     path="/api/products/{id}",
+     *     tags={"Products"},
+     *     summary="Obtener un producto por ID",
+     *     description="Obtiene un producto específica por su ID.",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del producto",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="producto obtenido correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="id", type="integer", example="1"),
+     *             @OA\Property(property="name", type="string", example="Product Name"),
+     *             @OA\Property(property="description", type="string", example="Product Description"),
+     *             @OA\Property(property="price", type="integer", example="1"),
+     *             @OA\Property(property="quantity",  type="decimal", example="10"),
+     *             @OA\Property(property="category_id",  type="integer", example="1"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="producto no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="error", type="string", example="Product not found")
+     *         )
+     *     )
+     * )
+     */
     public function show($id)
     {
         try {
@@ -39,6 +82,25 @@ class ProductController extends Controller
         }
     }
 
+     /**
+     * @OA\Post(
+     *     path="/api/products",
+     *     summary="Crear un nuevo producto",
+     *     tags={"Products"},
+     *     @OA\RequestBody(
+     *         @OA\JsonContent(
+     *             required={"name","price","quantity","category_id"},
+     *             @OA\Property(property="name", type="string", example="Product Name"),
+     *             @OA\Property(property="description", type="string", example="Descripcion Nuevo producto"),
+     *             @OA\Property(property="price", type="integer", example="1"),
+     *             @OA\Property(property="quantity",  type="decimal", example="10"),
+     *             @OA\Property(property="category_id",  type="integer", example="1"),
+     *         )
+     *     ),
+     *     @OA\Response(response="201", description="producto creado exitosamente"),
+     *     @OA\Response(response="422", description="Error de validación")
+    * )
+    */
     public function store(Request $request)
     {
         $validator = $this->validateProductRequest($request);
@@ -54,6 +116,34 @@ class ProductController extends Controller
         }
     }
 
+     /**
+     * @OA\Put(
+     *     path="/api/products/{id}",
+     *     summary="Actualizar un producto existente",
+     *     tags={"Products"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto a actualizar",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","price","quantity","category_id"},
+     *             @OA\Property(property="name", type="string", example="Update producto"),
+     *             @OA\Property(property="description", type="string", example="Descripcion update producto"),
+     *             @OA\Property(property="price", type="integer", example="1"),
+     *             @OA\Property(property="quantity",  type="decimal", example="10"),
+     *             @OA\Property(property="category_id",  type="integer", example="1"),
+     *         )
+     *     ),
+     *     @OA\Response(response="200", description="producto actualizada exitosamente"),
+     *     @OA\Response(response="400", description="Error al actualizar la producto"),
+     *     @OA\Response(response="422", description="Error de validación")
+     * )
+    */
     public function update(Request $request, $id)
     {
         $validator = $this->validateProductRequest($request);
@@ -69,6 +159,22 @@ class ProductController extends Controller
         }
     }
 
+     /**
+     * @OA\Delete(
+     *     path="/api/products/{id}",
+     *     summary="Eliminar un producto existente",
+     *     tags={"Products"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del producto a eliminar",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(response="204", description="producto eliminado exitosamente"),
+     *     @OA\Response(response="400", description="Error al eliminar el producto")
+     * )
+     */
     public function destroy($id)
     {
         try {
